@@ -1,7 +1,6 @@
 """Support for Scrape binary sensor"""
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 import logging
 
 import voluptuous as vol
@@ -110,7 +109,10 @@ class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntit
     # ------------------------------------------------------
     @property
     def icon(self) -> str:
-        return "mdi:eye-plus-outline"
+        if self.coordinator.old_value[self.sensor_name] != "":
+            return "mdi:eye-plus-outline"
+
+        return "mdi:eye-outline"
 
     # ------------------------------------------------------
     @property
@@ -127,6 +129,21 @@ class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntit
         attr["resource"] = self.resource
         attr["new_value"] = self.coordinator.new_value[self.sensor_name]
         attr["old_value"] = self.coordinator.old_value[self.sensor_name]
+
+        if self.coordinator.old_value[self.sensor_name] != "":
+            attr["markdown"] = (
+                '<font color= dodgerblue><ha-icon icon="mdi:eye-plus-outline"></ha-icon></font>'
+                f" [{self.sensor_name.capitalize()}]({self.resource})"
+                f" value updated to **'{self.coordinator.new_value[self.sensor_name]}'**"
+                f" from '{self.coordinator.old_value[self.sensor_name]}'"
+            )
+        else:
+            attr["markdown"] = (
+                '<font color= dodgerblue><ha-icon icon="mdi:eye-outline"></ha-icon></font>'
+                f" [{self.sensor_name.capitalize()}]({self.resource})"
+                f" value **'{self.coordinator.new_value[self.sensor_name]}'**"
+            )
+
         return attr
 
     # ------------------------------------------------------
