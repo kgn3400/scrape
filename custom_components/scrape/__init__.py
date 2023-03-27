@@ -25,10 +25,12 @@ from homeassistant.helpers.template_entity import TEMPLATE_SENSOR_BASE_SCHEMA
 from homeassistant.helpers.typing import ConfigType
 
 from .const import (
-    CONF_BS_SELECT_SELECT,
-    CONF_BS_SELECT_TYPE,
-    CONF_CLEAR_UPDATE_SWITCH_AFTER,
+    CONF_BS_SEARCH_SELECT,
+    CONF_BS_SEARCH_TYPE,
+    CONF_BS_SEARCH_TYPES,
+    CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER,
     CONF_INDEX,
+    CONF_NICKNAME,
     CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
     DEFAULT_SCAN_INTERVAL,
@@ -43,8 +45,13 @@ SENSOR_SCHEMA = vol.Schema(
         vol.Optional(CONF_ATTRIBUTE): cv.string,
         vol.Optional(CONF_INDEX, default=0): cv.positive_int,
         vol.Required(CONF_SELECT): cv.string,
-        vol.Required(CONF_BS_SELECT_TYPE, default=CONF_BS_SELECT_SELECT): cv.string,
+        vol.Required(CONF_BS_SEARCH_TYPE, default=CONF_BS_SEARCH_SELECT): vol.In(
+            CONF_BS_SEARCH_TYPES
+        ),
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+        # KGN start
+        vol.Required(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER): cv.positive_int,
+        # KGN end
     }
 )
 
@@ -52,8 +59,8 @@ COMBINED_SCHEMA = vol.Schema(
     {
         vol.Optional(CONF_SCAN_INTERVAL): cv.time_period,
         # KGN Start
-        vol.Optional(CONF_SCAN_INTERVAL_USER): cv.positive_int,
-        vol.Optional(CONF_CLEAR_UPDATE_SWITCH_AFTER): cv.positive_int,
+        vol.Required(CONF_SCAN_INTERVAL_USER): cv.positive_int,
+        vol.Optional(CONF_NICKNAME): cv.string,
         # KGN end
         **RESOURCE_SCHEMA,
         vol.Optional(SENSOR_DOMAIN): vol.All(
@@ -111,12 +118,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         rest,
         timedelta(minutes=rest_config.get(CONF_SCAN_INTERVAL_USER, 10)),
     )
-
-    for sensor in rest_config["sensor"]:
-        coordinator.updated[sensor[CONF_NAME].template] = False
-        coordinator.updated_at[sensor[CONF_NAME].template] = datetime.now()
-        coordinator.new_value[sensor[CONF_NAME].template] = ""
-        coordinator.old_value[sensor[CONF_NAME].template] = ""
 
     await coordinator.async_config_entry_first_refresh()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator

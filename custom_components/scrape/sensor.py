@@ -48,11 +48,11 @@ from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (  # KGN Start; DEFAULT_SCAN_INTERVAL,
-    CONF_BS_SELECT_FIND,
-    CONF_BS_SELECT_FIND_STRING,
-    CONF_BS_SELECT_SELECT,
-    CONF_BS_SELECT_TYPE,
-    CONF_CLEAR_UPDATE_SWITCH_AFTER,
+    CONF_BS_SEARCH_FIND,
+    CONF_BS_SEARCH_FIND_STRING,
+    CONF_BS_SEARCH_SELECT,
+    CONF_BS_SEARCH_TYPE,
+    CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER,
     CONF_INDEX,
     CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
@@ -77,14 +77,14 @@ PLATFORM_SCHEMA = PARENT_PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_VERIFY_SSL, default=DEFAULT_VERIFY_SSL): cv.boolean,
         # KGN Start
         vol.Optional(CONF_SCAN_INTERVAL_USER, default=10): cv.positive_int,
-        vol.Optional(CONF_CLEAR_UPDATE_SWITCH_AFTER, default=24): cv.positive_int,
+        vol.Optional(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, default=24): cv.positive_int,
         # KGN end
         vol.Optional(CONF_INDEX, default=0): cv.positive_int,
         # Linked to the parsing of the page (specific to scrape)
         vol.Optional(CONF_ATTRIBUTE): cv.string,
         vol.Optional(CONF_INDEX, default=0): cv.positive_int,
         # KGN Start
-        vol.Required(CONF_BS_SELECT_TYPE, default=CONF_BS_SELECT_SELECT): cv.string,
+        vol.Required(CONF_BS_SEARCH_TYPE, default=CONF_BS_SEARCH_SELECT): cv.string,
         # KGN End
         vol.Required(CONF_SELECT): cv.string,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
@@ -152,12 +152,12 @@ async def async_setup_platform(
                 sensor_config,
                 sensor_config[CONF_NAME],
                 sensor_config.get(CONF_UNIQUE_ID),
-                sensor_config.get(CONF_BS_SELECT_TYPE, CONF_BS_SELECT_SELECT),
+                sensor_config.get(CONF_BS_SEARCH_TYPE, CONF_BS_SEARCH_SELECT),
                 sensor_config[CONF_SELECT],
                 sensor_config.get(CONF_ATTRIBUTE),
                 sensor_config[CONF_INDEX],
                 value_template,
-                config.get(CONF_CLEAR_UPDATE_SWITCH_AFTER, 24),
+                config.get(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, 24),
             )
         )
 
@@ -184,7 +184,10 @@ async def async_setup_entry(
         index: int = int(sensor_config[CONF_INDEX])
         value_string: str | None = sensor_config.get(CONF_VALUE_TEMPLATE)
         unique_id: str = sensor_config[CONF_UNIQUE_ID]
-        select_type: str = sensor_config[CONF_BS_SELECT_TYPE]
+        search_type: str = sensor_config[CONF_BS_SEARCH_TYPE]
+        clear_udated_bin_sensor_after: float = float(
+            sensor_config.get(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, 24)
+        )
 
         value_template: Template | None = (
             Template(value_string, hass) if value_string is not None else None
@@ -196,12 +199,12 @@ async def async_setup_entry(
                 sensor_config,
                 name,
                 unique_id,
-                select_type,
+                search_type,
                 select,
                 attr,
                 index,
                 value_template,
-                config.get(CONF_CLEAR_UPDATE_SWITCH_AFTER, 24),
+                clear_udated_bin_sensor_after,
             )
         )
 
@@ -218,12 +221,16 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
         config: ConfigType,
         name: str,
         unique_id: str | None,
-        select_type: str,
+        # KGN start
+        search_type: str,
+        # KGN end
         select: str,
         attr: str | None,
         index: int,
         value_template: Template | None,
-        clear_update_switch_after: float,
+        # KGN start
+        clear_updated_bin_sensor_after: float,
+        # KGN end
     ) -> None:
         """Initialize a web scrape sensor."""
         CoordinatorEntity.__init__(self, coordinator)
@@ -236,19 +243,23 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
         )
         self._name: Template = name  # type: ignore
         self._select = select
-        self._select_type = select_type
         self._attr = attr
         self._index = index
         self._value_template = value_template
-        self._clear_update_switch_after: float = clear_update_switch_after
+        # KGN start
+        self._search_type = search_type
+        self._clear_updated_bin_sensor_after: float = clear_updated_bin_sensor_after
         self.sensor_name: str = self._name.template  # type: ignore
+        # KGN end
 
     def _extract_value(self) -> Any:
         """Parse the html extraction in the executor."""
         raw_data = self.coordinator.data
         value = ""
 
-        if self._select_type == CONF_BS_SELECT_SELECT:
+        # KGN start
+        if self._search_type == CONF_BS_SEARCH_SELECT:
+            # KGN end
             try:
                 if self._attr is not None:
                     value = raw_data.select(self._select)[self._index][self._attr]
@@ -269,7 +280,8 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
                 )
                 value = None
 
-        elif self._select_type == CONF_BS_SELECT_FIND:
+        # KGN start
+        elif self._search_type == CONF_BS_SEARCH_FIND:
             try:
                 value = raw_data.find_all(self._select)[self._index].string
 
@@ -280,7 +292,7 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
                 _LOGGER.exception("BS find exception")
                 value = None
 
-        elif self._select_type == CONF_BS_SELECT_FIND_STRING:
+        elif self._search_type == CONF_BS_SEARCH_FIND_STRING:
             try:
                 value = raw_data.find_all(string=re.compile(self._select))[
                     self._index
@@ -292,6 +304,7 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
             except Exception:
                 _LOGGER.exception("BS find exception")
                 value = None
+        # KGN end
 
         _LOGGER.debug("Parsed value: %s", value)
         return value
@@ -330,27 +343,32 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
         if value is None:
             return
 
-        if self.coordinator.new_value[self.sensor_name] == "":
+        if self.coordinator.new_value.get(self.sensor_name, "") == "":
             self.coordinator.new_value[self.sensor_name] = value
+            self.coordinator.old_value[self.sensor_name] = ""
             self.coordinator.updated[self.sensor_name] = False
-        elif self.coordinator.new_value[self.sensor_name] != value:
+            self.coordinator.updated_at[self.sensor_name] = datetime.now()
+
+        elif self.coordinator.new_value.get(self.sensor_name, "") != value:
             self.coordinator.old_value[self.sensor_name] = self.coordinator.new_value[
                 self.sensor_name
             ]
             self.coordinator.new_value[self.sensor_name] = str(value)
             self.coordinator.updated_at[self.sensor_name] = datetime.now()
             self.coordinator.updated[self.sensor_name] = True
+
         elif (
-            self.coordinator.old_value[self.sensor_name] != ""
+            self.coordinator.old_value.get(self.sensor_name, "") != ""
             and (
-                self.coordinator.updated_at[self.sensor_name]
-                + timedelta(hours=self._clear_update_switch_after)
+                self.coordinator.updated_at.get(self.sensor_name, datetime.now())
+                + timedelta(hours=self._clear_updated_bin_sensor_after)
             )
             < datetime.now()
         ):
             self.coordinator.old_value[self.sensor_name] = ""
             self.coordinator.updated[self.sensor_name] = False
-        elif self.coordinator.old_value[self.sensor_name] != "":
+
+        elif self.coordinator.old_value.get(self.sensor_name, "") != "":
             self.coordinator.updated[self.sensor_name] = True
         # KGN end
 

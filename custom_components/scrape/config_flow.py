@@ -61,11 +61,12 @@ from homeassistant.helpers.selector import (
 
 from . import COMBINED_SCHEMA
 from .const import (
-    CONF_BS_SELECT_SELECT,
-    CONF_BS_SELECT_TYPE,
-    CONF_BS_SELECT_TYPES,
-    CONF_CLEAR_UPDATE_SWITCH_AFTER,
+    CONF_BS_SEARCH_SELECT,
+    CONF_BS_SEARCH_TYPE,
+    CONF_BS_SEARCH_TYPES,
+    CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER,
     CONF_INDEX,
+    CONF_NICKNAME,
     CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
     DEFAULT_NAME,
@@ -74,6 +75,9 @@ from .const import (
 )
 
 RESOURCE_SETUP = {
+    # KGN start
+    vol.Optional(CONF_NICKNAME, default=""): TextSelector(),
+    # KGN end
     vol.Required(CONF_RESOURCE): TextSelector(
         TextSelectorConfig(type=TextSelectorType.URL)
     ),
@@ -96,14 +100,9 @@ RESOURCE_SETUP = {
         NumberSelectorConfig(min=0, step=1, mode=NumberSelectorMode.BOX)
     ),
     # KGN Start
-    vol.Optional(CONF_SCAN_INTERVAL_USER, default=10): NumberSelector(
+    vol.Required(CONF_SCAN_INTERVAL_USER, default=10): NumberSelector(
         NumberSelectorConfig(
             min=10, step=1, mode=NumberSelectorMode.BOX, unit_of_measurement="Minutes"
-        )
-    ),
-    vol.Optional(CONF_CLEAR_UPDATE_SWITCH_AFTER, default=24): NumberSelector(
-        NumberSelectorConfig(
-            min=1, step=1, mode=NumberSelectorMode.BOX, unit_of_measurement="Hours"
         )
     ),
     # KGN End
@@ -111,9 +110,9 @@ RESOURCE_SETUP = {
 
 SENSOR_SETUP = {
     # KGN Start
-    vol.Optional(CONF_BS_SELECT_TYPE, default=CONF_BS_SELECT_SELECT): SelectSelector(
+    vol.Required(CONF_BS_SEARCH_TYPE, default=CONF_BS_SEARCH_SELECT): SelectSelector(
         SelectSelectorConfig(
-            options=CONF_BS_SELECT_TYPES, mode=SelectSelectorMode.DROPDOWN
+            options=CONF_BS_SEARCH_TYPES, mode=SelectSelectorMode.DROPDOWN
         )
     ),
     # KGN End
@@ -142,6 +141,13 @@ SENSOR_SETUP = {
             mode=SelectSelectorMode.DROPDOWN,
         )
     ),
+    # KGN start
+    vol.Required(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, default=24): NumberSelector(
+        NumberSelectorConfig(
+            min=1, step=1, mode=NumberSelectorMode.BOX, unit_of_measurement="Hours"
+        )
+    ),
+    # KGN end
 }
 
 
@@ -318,4 +324,8 @@ class ScrapeConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
 
     def async_config_entry_title(self, options: Mapping[str, Any]) -> str:
         """Return config entry title."""
-        return cast(str, options[CONF_RESOURCE])
+
+        if options[CONF_NICKNAME].strip() != "":
+            return cast(str, options[CONF_NICKNAME].strip())
+        else:
+            return cast(str, options[CONF_RESOURCE])

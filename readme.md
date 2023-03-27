@@ -12,5 +12,6 @@ Clone/enhancement of  [Home assistant Scrape integration](https://www.home-assis
 - Interval for when binary sensor for updated is reset.
 - Interval for scan.
 - Added option for scraping with Beautifulsoap4 find and find string functions.
+- Option for using Nickname instead of url as config entry.
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=scrape)

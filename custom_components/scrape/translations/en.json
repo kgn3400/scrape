@@ -13,11 +13,12 @@
           "device_class": "Device Class",
           "index": "Index",
           "name": "Name",
-          "select": "Select",
-          "select_type": "Select type",
+          "select": "Select, find or find string argument",
+          "search_type": "Search type",
           "state_class": "State Class",
           "unit_of_measurement": "Unit of Measurement",
-          "value_template": "Value Template"
+          "value_template": "Value Template",
+          "clear_updated_bin_sensor_after": "Clear"
         },
         "data_description": {
           "attribute": "Get value of an attribute on the selected tag",
@@ -26,7 +27,9 @@
           "select": "Defines what tag to search for. Check Beautifulsoup CSS selectors for details",
           "state_class": "The state_class of the sensor",
           "unit_of_measurement": "Choose temperature measurement or create your own",
-          "value_template": "Defines a template to get the state of the sensor"
+          "value_template": "Defines a template to get the state of the sensor",
+          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
+          "search_type": "Search via select, find or find string"
         }
       },
       "user": {
@@ -39,15 +42,16 @@
           "timeout": "Timeout",
           "username": "Username",
           "verify_ssl": "Verify SSL certificate",
-          "scan_interval_user": "Time between scans",
-          "clear_update_switch_after": "Clear update switch after"
+          "scan_interval_user": "Scan interval",
+          "nickname": "Nickname for configuration entry"
         },
         "data_description": {
           "authentication": "Type of the HTTP authentication. Either basic or digest",
           "headers": "Headers to use for the web request",
           "resource": "The URL to the website that contains the value",
           "timeout": "Timeout for connection to website",
-          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed"
+          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed",
+          "scan_interval_user": "Time between scans"
         }
       }
     }
@@ -66,11 +70,12 @@
           "device_class": "Device Class",
           "index": "Index",
           "name": "Name",
-          "select": "Select",
-          "select_type": "Select type",
+          "select": "Select, find or find string argument",
+          "search_type": "Search type",
           "state_class": "State Class",
           "unit_of_measurement": "Unit of Measurement",
-          "value_template": "Value Template"
+          "value_template": "Value Template",
+          "clear_updated_bin_sensor_after": "Clear"
         },
         "data_description": {
           "attribute": "Get value of an attribute on the selected tag",
@@ -79,7 +84,9 @@
           "select": "Defines what tag to search for. Check Beautifulsoup CSS selectors for details",
           "state_class": "The state_class of the sensor",
           "unit_of_measurement": "Choose temperature measurement or create your own",
-          "value_template": "Defines a template to get the state of the sensor"
+          "value_template": "Defines a template to get the state of the sensor",
+          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
+          "search_type": "Search via select, find or find string"
         }
       },
       "edit_sensor": {
@@ -88,11 +95,12 @@
           "device_class": "Device Class",
           "index": "Index",
           "name": "Name",
-          "select": "Select",
-          "select_type": "Select type",
+          "select": "Select, find or find string argument",
+          "search_type": "Search type",
           "state_class": "State Class",
           "unit_of_measurement": "Unit of Measurement",
-          "value_template": "Value Template"
+          "value_template": "Value Template",
+          "clear_updated_bin_sensor_after": "Clear"
         },
         "data_description": {
           "attribute": "Get value of an attribute on the selected tag",
@@ -101,7 +109,9 @@
           "select": "Defines what tag to search for. Check Beautifulsoup CSS selectors for details",
           "state_class": "The state_class of the sensor",
           "unit_of_measurement": "Choose temperature measurement or create your own",
-          "value_template": "Defines a template to get the state of the sensor"
+          "value_template": "Defines a template to get the state of the sensor",
+          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
+          "search_type": "Search via select, find or find string"
         }
       },
       "init": {
@@ -121,14 +131,17 @@
           "resource": "Resource",
           "timeout": "Timeout",
           "username": "Username",
-          "verify_ssl": "Verify SSL certificate"
+          "verify_ssl": "Verify SSL certificate",
+          "scan_interval_user": "Scan interval",
+          "nickname": "Nickname for configuration entry"
         },
         "data_description": {
           "authentication": "Type of the HTTP authentication. Either basic or digest",
           "headers": "Headers to use for the web request",
           "resource": "The URL to the website that contains the value",
           "timeout": "Timeout for connection to website",
-          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed"
+          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed",
+          "scan_interval_user": "Time between scans"
         }
       }
     }
