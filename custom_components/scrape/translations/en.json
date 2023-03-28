@@ -10,26 +10,26 @@
       "sensor": {
         "data": {
           "attribute": "Attribute",
+          "clear_updated_bin_sensor_after": "Clear",
           "device_class": "Device Class",
           "index": "Index",
           "name": "Name",
-          "select": "Select, find or find string argument",
           "search_type": "Search type",
+          "select": "Select, find or find string argument",
           "state_class": "State Class",
           "unit_of_measurement": "Unit of Measurement",
-          "value_template": "Value Template",
-          "clear_updated_bin_sensor_after": "Clear"
+          "value_template": "Value Template"
         },
         "data_description": {
           "attribute": "Get value of an attribute on the selected tag",
+          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
           "device_class": "The type/class of the sensor to set the icon in the frontend",
           "index": "Defines which of the elements returned by the CSS selector to use",
+          "search_type": "Search via select, find or find string",
           "select": "Defines what tag to search for. Check Beautifulsoup CSS selectors for details",
           "state_class": "The state_class of the sensor",
           "unit_of_measurement": "Choose temperature measurement or create your own",
-          "value_template": "Defines a template to get the state of the sensor",
-          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
-          "search_type": "Search via select, find or find string"
+          "value_template": "Defines a template to get the state of the sensor"
         }
       },
       "user": {
@@ -37,21 +37,21 @@
           "authentication": "Select authentication method",
           "headers": "Headers",
           "method": "Method",
+          "nickname": "Nickname for configuration entry",
           "password": "Password",
           "resource": "Resource",
+          "scan_interval_user": "Scan interval",
           "timeout": "Timeout",
           "username": "Username",
-          "verify_ssl": "Verify SSL certificate",
-          "scan_interval_user": "Scan interval",
-          "nickname": "Nickname for configuration entry"
+          "verify_ssl": "Verify SSL certificate"
         },
         "data_description": {
           "authentication": "Type of the HTTP authentication. Either basic or digest",
           "headers": "Headers to use for the web request",
           "resource": "The URL to the website that contains the value",
+          "scan_interval_user": "Time between scans",
           "timeout": "Timeout for connection to website",
-          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed",
-          "scan_interval_user": "Time between scans"
+          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed"
         }
       }
     }
@@ -67,51 +67,51 @@
       "add_sensor": {
         "data": {
           "attribute": "Attribute",
+          "clear_updated_bin_sensor_after": "Clear",
           "device_class": "Device Class",
           "index": "Index",
           "name": "Name",
-          "select": "Select, find or find string argument",
           "search_type": "Search type",
+          "select": "Select, find or find string argument",
           "state_class": "State Class",
           "unit_of_measurement": "Unit of Measurement",
-          "value_template": "Value Template",
-          "clear_updated_bin_sensor_after": "Clear"
+          "value_template": "Value Template"
         },
         "data_description": {
           "attribute": "Get value of an attribute on the selected tag",
+          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
           "device_class": "The type/class of the sensor to set the icon in the frontend",
           "index": "Defines which of the elements returned by the CSS selector to use",
+          "search_type": "Search via select, find or find string",
           "select": "Defines what tag to search for. Check Beautifulsoup CSS selectors for details",
           "state_class": "The state_class of the sensor",
           "unit_of_measurement": "Choose temperature measurement or create your own",
-          "value_template": "Defines a template to get the state of the sensor",
-          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
-          "search_type": "Search via select, find or find string"
+          "value_template": "Defines a template to get the state of the sensor"
         }
       },
       "edit_sensor": {
         "data": {
           "attribute": "Attribute",
+          "clear_updated_bin_sensor_after": "Clear",
           "device_class": "Device Class",
           "index": "Index",
           "name": "Name",
-          "select": "Select, find or find string argument",
           "search_type": "Search type",
+          "select": "Select, find or find string argument",
           "state_class": "State Class",
           "unit_of_measurement": "Unit of Measurement",
-          "value_template": "Value Template",
-          "clear_updated_bin_sensor_after": "Clear"
+          "value_template": "Value Template"
         },
         "data_description": {
           "attribute": "Get value of an attribute on the selected tag",
+          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
           "device_class": "The type/class of the sensor to set the icon in the frontend",
           "index": "Defines which of the elements returned by the CSS selector to use",
+          "search_type": "Search via select, find or find string",
           "select": "Defines what tag to search for. Check Beautifulsoup CSS selectors for details",
           "state_class": "The state_class of the sensor",
           "unit_of_measurement": "Choose temperature measurement or create your own",
-          "value_template": "Defines a template to get the state of the sensor",
-          "clear_updated_bin_sensor_after": "Clear updated binary sensor after",
-          "search_type": "Search via select, find or find string"
+          "value_template": "Defines a template to get the state of the sensor"
         }
       },
       "init": {
@@ -127,22 +127,31 @@
           "authentication": "Select authentication method",
           "headers": "Headers",
           "method": "Method",
+          "nickname": "Nickname for configuration entry",
           "password": "Password",
           "resource": "Resource",
+          "scan_interval_user": "Scan interval",
           "timeout": "Timeout",
           "username": "Username",
-          "verify_ssl": "Verify SSL certificate",
-          "scan_interval_user": "Scan interval",
-          "nickname": "Nickname for configuration entry"
+          "verify_ssl": "Verify SSL certificate"
         },
         "data_description": {
           "authentication": "Type of the HTTP authentication. Either basic or digest",
           "headers": "Headers to use for the web request",
           "resource": "The URL to the website that contains the value",
+          "scan_interval_user": "Time between scans",
           "timeout": "Timeout for connection to website",
-          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed",
-          "scan_interval_user": "Time between scans"
+          "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed"
         }
+      }
+    }
+  },
+  "selector": {
+    "search_types": {
+      "options": {
+        "find": "Find",
+        "find_string": "Find string",
+        "select": "Select"
       }
     }
   }

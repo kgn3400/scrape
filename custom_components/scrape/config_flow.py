@@ -112,7 +112,9 @@ SENSOR_SETUP = {
     # KGN Start
     vol.Required(CONF_BS_SEARCH_TYPE, default=CONF_BS_SEARCH_SELECT): SelectSelector(
         SelectSelectorConfig(
-            options=CONF_BS_SEARCH_TYPES, mode=SelectSelectorMode.DROPDOWN
+            options=CONF_BS_SEARCH_TYPES,
+            mode=SelectSelectorMode.DROPDOWN,
+            translation_key="search_types",
         )
     ),
     # KGN End

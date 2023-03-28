@@ -157,7 +157,7 @@ async def async_setup_platform(
                 sensor_config.get(CONF_ATTRIBUTE),
                 sensor_config[CONF_INDEX],
                 value_template,
-                config.get(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, 24),
+                sensor_config.get(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, 24),
             )
         )
 
