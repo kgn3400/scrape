@@ -7,7 +7,7 @@ import logging
 from bs4 import BeautifulSoup
 
 from homeassistant.components.rest import RestData
-from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,11 +33,6 @@ class ScrapeCoordinator(DataUpdateCoordinator[BeautifulSoup]):
         self.old_value: dict[str, str] = {}
         self.updated_at: dict[str, datetime] = {}
         # KGN End
-
-    # ------------------------------------------------------------------
-    async def reset_service(self, call: ServiceCall) -> None:
-        """Hiper service interface"""
-        await self.async_request_refresh()
 
     async def _async_update_data(self) -> BeautifulSoup:
         """Fetch data from Rest."""

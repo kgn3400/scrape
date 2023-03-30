@@ -1,4 +1,4 @@
-"""Support for Scrape binary sensor"""
+"""Support for Scrape binary sensor."""
 from __future__ import annotations
 
 import logging
@@ -73,7 +73,7 @@ async def async_setup_entry(
 # ------------------------------------------------------
 # ------------------------------------------------------
 class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntity):
-    """Binary Sensor class for Scrape updates"""
+    """Binary Sensor class for Scrape updates."""
 
     # ------------------------------------------------------
     def __init__(
@@ -104,11 +104,13 @@ class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntit
     # ------------------------------------------------------
     @property
     def name(self) -> str:
+        """Name."""
         return self._name
 
     # ------------------------------------------------------
     @property
     def icon(self) -> str:
+        """Icon."""
         if self.coordinator.old_value[self.sensor_name] != "":
             return "mdi:eye-plus-outline"
 
@@ -124,6 +126,7 @@ class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntit
     # ------------------------------------------------------
     @property
     def extra_state_attributes(self) -> dict:
+        """Extra state attributes."""
         attr: dict = {}
 
         attr["resource"] = self.resource
@@ -149,6 +152,7 @@ class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntit
     # ------------------------------------------------------
     @property
     def unique_id(self) -> str:
+        """Unique id."""
         return self._unique_id
 
     # ------------------------------------------------------

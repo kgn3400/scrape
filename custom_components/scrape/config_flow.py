@@ -65,10 +65,12 @@ from .const import (
     CONF_BS_SEARCH_TYPE,
     CONF_BS_SEARCH_TYPES,
     CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER,
+    CONF_ENCODING,
     CONF_INDEX,
     CONF_NICKNAME,
     CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
+    DEFAULT_ENCODING,
     DEFAULT_NAME,
     DEFAULT_VERIFY_SSL,
     DOMAIN,
@@ -99,6 +101,7 @@ RESOURCE_SETUP = {
     vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): NumberSelector(
         NumberSelectorConfig(min=0, step=1, mode=NumberSelectorMode.BOX)
     ),
+    vol.Optional(CONF_ENCODING, default=DEFAULT_ENCODING): TextSelector(),
     # KGN Start
     vol.Required(CONF_SCAN_INTERVAL_USER, default=10): NumberSelector(
         NumberSelectorConfig(
@@ -329,5 +332,5 @@ class ScrapeConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
 
         if options[CONF_NICKNAME].strip() != "":
             return cast(str, options[CONF_NICKNAME].strip())
-        else:
-            return cast(str, options[CONF_RESOURCE])
+
+        return cast(str, options[CONF_RESOURCE])

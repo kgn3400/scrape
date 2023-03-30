@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Coroutine
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any
 
 import voluptuous as vol
@@ -13,7 +13,6 @@ from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_ATTRIBUTE,
-    CONF_NAME,
     CONF_SCAN_INTERVAL,
     CONF_VALUE_TEMPLATE,
     Platform,

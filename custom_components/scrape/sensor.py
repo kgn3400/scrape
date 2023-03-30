@@ -4,41 +4,22 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 import logging
 import re
-from typing import Any
+from typing import Any, cast
 
 import voluptuous as vol
 
-from homeassistant.components.rest import RESOURCE_SCHEMA, create_rest_data_from_config
-from homeassistant.components.sensor import (
-    CONF_STATE_CLASS,
-    DEVICE_CLASSES_SCHEMA,
-    PLATFORM_SCHEMA as PARENT_PLATFORM_SCHEMA,
-    STATE_CLASSES_SCHEMA,
-    SensorDeviceClass,
-)
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.sensor.helpers import async_parse_date_datetime
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (  # KGN start; CONF_SCAN_INTERVAL,; KGN end
+from homeassistant.const import (
     CONF_ATTRIBUTE,
-    CONF_AUTHENTICATION,
-    CONF_DEVICE_CLASS,
-    CONF_HEADERS,
     CONF_NAME,
-    CONF_PASSWORD,
-    CONF_RESOURCE,
     CONF_UNIQUE_ID,
-    CONF_UNIT_OF_MEASUREMENT,
-    CONF_USERNAME,
     CONF_VALUE_TEMPLATE,
-    CONF_VERIFY_SSL,
-    HTTP_BASIC_AUTHENTICATION,
-    HTTP_DIGEST_AUTHENTICATION,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import PlatformNotReady
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 from homeassistant.helpers.template import Template
 from homeassistant.helpers.template_entity import (
     TEMPLATE_SENSOR_BASE_SCHEMA,
@@ -47,55 +28,19 @@ from homeassistant.helpers.template_entity import (
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import (  # KGN Start; DEFAULT_SCAN_INTERVAL,
+from .const import (
     CONF_BS_SEARCH_FIND,
     CONF_BS_SEARCH_FIND_STRING,
     CONF_BS_SEARCH_SELECT,
     CONF_BS_SEARCH_TYPE,
     CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER,
     CONF_INDEX,
-    CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
-    DEFAULT_NAME,
-    DEFAULT_VERIFY_SSL,
     DOMAIN,
 )
 from .coordinator import ScrapeCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-
-PLATFORM_SCHEMA = PARENT_PLATFORM_SCHEMA.extend(
-    {
-        # Linked to the loading of the page (can be linked to RestData)
-        vol.Optional(CONF_AUTHENTICATION): vol.In(
-            [HTTP_BASIC_AUTHENTICATION, HTTP_DIGEST_AUTHENTICATION]
-        ),
-        vol.Optional(CONF_HEADERS): vol.Schema({cv.string: cv.string}),
-        vol.Optional(CONF_PASSWORD): cv.string,
-        vol.Required(CONF_RESOURCE): cv.string,
-        vol.Optional(CONF_USERNAME): cv.string,
-        vol.Optional(CONF_VERIFY_SSL, default=DEFAULT_VERIFY_SSL): cv.boolean,
-        # KGN Start
-        vol.Optional(CONF_SCAN_INTERVAL_USER, default=10): cv.positive_int,
-        vol.Optional(CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER, default=24): cv.positive_int,
-        # KGN end
-        vol.Optional(CONF_INDEX, default=0): cv.positive_int,
-        # Linked to the parsing of the page (specific to scrape)
-        vol.Optional(CONF_ATTRIBUTE): cv.string,
-        vol.Optional(CONF_INDEX, default=0): cv.positive_int,
-        # KGN Start
-        vol.Required(CONF_BS_SEARCH_TYPE, default=CONF_BS_SEARCH_SELECT): cv.string,
-        # KGN End
-        vol.Required(CONF_SELECT): cv.string,
-        vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
-        # Linked to the sensor definition (can be linked to TemplateSensor)
-        vol.Optional(CONF_DEVICE_CLASS): DEVICE_CLASSES_SCHEMA,
-        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Optional(CONF_STATE_CLASS): STATE_CLASSES_SCHEMA,
-        vol.Optional(CONF_UNIQUE_ID): cv.string,
-        vol.Optional(CONF_UNIT_OF_MEASUREMENT): cv.string,
-    }
-)
 
 
 async def async_setup_platform(
@@ -105,35 +50,9 @@ async def async_setup_platform(
     discovery_info: DiscoveryInfoType | None = None,
 ) -> None:
     """Set up the Web scrape sensor."""
-    coordinator: ScrapeCoordinator
-    sensors_config: list[ConfigType]
-    if discovery_info is None:
-        async_create_issue(
-            hass,
-            DOMAIN,
-            "moved_yaml",
-            breaks_in_ha_version="2022.12.0",
-            is_fixable=False,
-            severity=IssueSeverity.WARNING,
-            translation_key="moved_yaml",
-        )
-        resource_config = vol.Schema(RESOURCE_SCHEMA, extra=vol.REMOVE_EXTRA)(config)
-        rest = create_rest_data_from_config(hass, resource_config)
-
-        # scan_interval: timedelta = config.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
-        coordinator = ScrapeCoordinator(
-            hass, rest, timedelta(minutes=config.get(CONF_SCAN_INTERVAL_USER, 10))
-        )
-
-        sensors_config = [
-            vol.Schema(TEMPLATE_SENSOR_BASE_SCHEMA.schema, extra=vol.ALLOW_EXTRA)(
-                config
-            )
-        ]
-
-    else:
-        coordinator = discovery_info["coordinator"]
-        sensors_config = discovery_info["configs"]
+    discovery_info = cast(DiscoveryInfoType, discovery_info)
+    coordinator: ScrapeCoordinator = discovery_info["coordinator"]
+    sensors_config: list[ConfigType] = discovery_info["configs"]
 
     await coordinator.async_refresh()
     if coordinator.data is None:
@@ -338,7 +257,7 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
 
     # KGN start
     def set_updated_status(self, value: str) -> None:
-        """Set status for updated"""
+        """Set status for updated."""
 
         if value is None:
             return
