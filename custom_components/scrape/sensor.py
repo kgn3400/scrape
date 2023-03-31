@@ -1,6 +1,7 @@
 """Support for getting data from websites with scraping."""
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta
 import logging
 import re
@@ -165,10 +166,12 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
         self._attr = attr
         self._index = index
         self._value_template = value_template
+        #      self.hass = hass
         # KGN start
         self._search_type = search_type
         self._clear_updated_bin_sensor_after: float = clear_updated_bin_sensor_after
         self.sensor_name: str = self._name.template  # type: ignore
+        self.forced_refresh: bool = False
         # KGN end
 
     def _extract_value(self) -> Any:
@@ -241,7 +244,8 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
             value = template.async_render_with_possible_json_value(value, None)
 
         # KGN start
-        self.set_updated_status(value)
+        if value is not None:
+            self.update_binary_sensor_values(value)
         # KGN end
 
         if self.device_class not in {
@@ -256,18 +260,37 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
         )
 
     # KGN start
-    def set_updated_status(self, value: str) -> None:
+    def update_binary_sensor_values(self, value: str) -> None:
         """Set status for updated."""
 
-        if value is None:
+        if (
+            self.coordinator.updated.get(self.sensor_name, False) is True
+            and self.forced_refresh is False
+            and self.coordinator.new_value.get(self.sensor_name, "") != value
+        ):
+            # Updated state is true, but we already got a updated new value.
+            # Force updated state to false and que a refresh.
+            self.forced_refresh = True
+            self.coordinator.old_value[self.sensor_name] = ""
+            self.coordinator.updated[self.sensor_name] = False
+
+            # I'm not sure this is the correct/safe way to call a async refresh from a non async function!?
+            # https://developers.home-assistant.io/docs/asyncio_working_with_async/#calling-async-functions-from-threads
+            asyncio.run_coroutine_threadsafe(
+                self.coordinator.async_refresh(), self.hass.loop
+            )
             return
 
+        self.forced_refresh = False
+
+        # First time
         if self.coordinator.new_value.get(self.sensor_name, "") == "":
             self.coordinator.new_value[self.sensor_name] = value
             self.coordinator.old_value[self.sensor_name] = ""
             self.coordinator.updated[self.sensor_name] = False
             self.coordinator.updated_at[self.sensor_name] = datetime.now()
 
+        # New value
         elif self.coordinator.new_value.get(self.sensor_name, "") != value:
             self.coordinator.old_value[self.sensor_name] = self.coordinator.new_value[
                 self.sensor_name
@@ -276,8 +299,9 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
             self.coordinator.updated_at[self.sensor_name] = datetime.now()
             self.coordinator.updated[self.sensor_name] = True
 
+        # Clear updated state
         elif (
-            self.coordinator.old_value.get(self.sensor_name, "") != ""
+            self.coordinator.updated.get(self.sensor_name, False) is True
             and (
                 self.coordinator.updated_at.get(self.sensor_name, datetime.now())
                 + timedelta(hours=self._clear_updated_bin_sensor_after)
@@ -287,8 +311,9 @@ class ScrapeSensor(CoordinatorEntity[ScrapeCoordinator], TemplateSensor):
             self.coordinator.old_value[self.sensor_name] = ""
             self.coordinator.updated[self.sensor_name] = False
 
-        elif self.coordinator.old_value.get(self.sensor_name, "") != "":
-            self.coordinator.updated[self.sensor_name] = True
+        # Hmm
+        # elif self.coordinator.old_value.get(self.sensor_name, "") != "":
+        #     self.coordinator.updated[self.sensor_name] = True
         # KGN end
 
     @callback

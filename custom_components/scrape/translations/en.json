@@ -40,7 +40,7 @@
           "nickname": "Nickname for configuration entry",
           "password": "Password",
           "resource": "Resource",
-          "scan_interval_user": "Scan interval",
+          "scan_interval": "Scan interval",
           "timeout": "Timeout",
           "username": "Username",
           "verify_ssl": "Verify SSL certificate"
@@ -49,7 +49,7 @@
           "authentication": "Type of the HTTP authentication. Either basic or digest",
           "headers": "Headers to use for the web request",
           "resource": "The URL to the website that contains the value",
-          "scan_interval_user": "Time between scans",
+          "scan_interval": "Time between scans",
           "timeout": "Timeout for connection to website",
           "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed"
         }
@@ -124,7 +124,7 @@
           "nickname": "Nickname for configuration entry",
           "password": "Password",
           "resource": "Resource",
-          "scan_interval_user": "Scan interval",
+          "scan_interval": "Scan interval",
           "timeout": "Timeout",
           "username": "Username",
           "verify_ssl": "Verify SSL certificate"
@@ -133,7 +133,7 @@
           "authentication": "Type of the HTTP authentication. Either basic or digest",
           "headers": "Headers to use for the web request",
           "resource": "The URL to the website that contains the value",
-          "scan_interval_user": "Time between scans",
+          "scan_interval": "Time between scans",
           "timeout": "Timeout for connection to website",
           "verify_ssl": "Enables/disables verification of SSL/TLS certificate, for example if it is self-signed"
         }

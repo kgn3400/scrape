@@ -1,19 +1,16 @@
 """Constants for Scrape integration."""
 from __future__ import annotations
 
-from datetime import timedelta
-
 from homeassistant.const import Platform
 
 DOMAIN = "scrape"
 DEFAULT_ENCODING = "UTF-8"
 DEFAULT_NAME = "Web scrape"
 DEFAULT_VERIFY_SSL = True
-DEFAULT_SCAN_INTERVAL = timedelta(minutes=10)
+DEFAULT_SCAN_INTERVAL = 10
 
 # KGN start
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
-CONF_SCAN_INTERVAL_USER = "scan_interval_user"
 CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER = "clear_updated_bin_sensor_after"
 CONF_BS_SEARCH_TYPE = "search_type"
 CONF_NICKNAME = "nickname"

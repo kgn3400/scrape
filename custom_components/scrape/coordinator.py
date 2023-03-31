@@ -37,6 +37,7 @@ class ScrapeCoordinator(DataUpdateCoordinator[BeautifulSoup]):
     async def _async_update_data(self) -> BeautifulSoup:
         """Fetch data from Rest."""
         await self._rest.async_update()
+
         if (data := self._rest.data) is None:
             raise UpdateFailed("REST data is not available")
         soup = await self.hass.async_add_executor_job(BeautifulSoup, data, "lxml")

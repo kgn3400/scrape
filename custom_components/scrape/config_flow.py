@@ -25,6 +25,7 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_PASSWORD,
     CONF_RESOURCE,
+    CONF_SCAN_INTERVAL,
     CONF_TIMEOUT,
     CONF_UNIQUE_ID,
     CONF_UNIT_OF_MEASUREMENT,
@@ -60,7 +61,7 @@ from homeassistant.helpers.selector import (
 )
 
 from . import COMBINED_SCHEMA
-from .const import (
+from .const import (  # CONF_SCAN_INTERVAL_USER,
     CONF_BS_SEARCH_SELECT,
     CONF_BS_SEARCH_TYPE,
     CONF_BS_SEARCH_TYPES,
@@ -68,10 +69,10 @@ from .const import (
     CONF_ENCODING,
     CONF_INDEX,
     CONF_NICKNAME,
-    CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
     DEFAULT_ENCODING,
     DEFAULT_NAME,
+    DEFAULT_SCAN_INTERVAL,
     DEFAULT_VERIFY_SSL,
     DOMAIN,
 )
@@ -103,9 +104,9 @@ RESOURCE_SETUP = {
     ),
     vol.Optional(CONF_ENCODING, default=DEFAULT_ENCODING): TextSelector(),
     # KGN Start
-    vol.Required(CONF_SCAN_INTERVAL_USER, default=10): NumberSelector(
+    vol.Required(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): NumberSelector(
         NumberSelectorConfig(
-            min=10, step=1, mode=NumberSelectorMode.BOX, unit_of_measurement="Minutes"
+            min=1, step=1, mode=NumberSelectorMode.BOX, unit_of_measurement="Minutes"
         )
     ),
     # KGN End

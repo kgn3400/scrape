@@ -30,7 +30,6 @@ from .const import (
     CONF_CLEAR_UPDATED_BIN_SENSOR_AFTER,
     CONF_INDEX,
     CONF_NICKNAME,
-    CONF_SCAN_INTERVAL_USER,
     CONF_SELECT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
@@ -56,9 +55,8 @@ SENSOR_SCHEMA = vol.Schema(
 
 COMBINED_SCHEMA = vol.Schema(
     {
-        vol.Optional(CONF_SCAN_INTERVAL): cv.time_period,
+        vol.Optional(CONF_SCAN_INTERVAL): cv.positive_int,
         # KGN Start
-        vol.Required(CONF_SCAN_INTERVAL_USER): cv.positive_int,
         vol.Optional(CONF_NICKNAME): cv.string,
         # KGN end
         **RESOURCE_SCHEMA,
@@ -83,8 +81,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     load_coroutines: list[Coroutine[Any, Any, None]] = []
     for resource_config in scrape_config:
         rest = create_rest_data_from_config(hass, resource_config)
-        scan_interval: timedelta = resource_config.get(
-            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        scan_interval: timedelta = timedelta(
+            minutes=resource_config.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
         )
         coordinator = ScrapeCoordinator(hass, rest, scan_interval)
 
@@ -115,7 +113,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator = ScrapeCoordinator(
         hass,
         rest,
-        timedelta(minutes=rest_config.get(CONF_SCAN_INTERVAL_USER, 10)),
+        timedelta(minutes=rest_config.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)),
     )
 
     await coordinator.async_config_entry_first_refresh()

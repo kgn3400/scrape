@@ -120,7 +120,6 @@ class ScrapeBinarySensor(CoordinatorEntity[ScrapeCoordinator], BinarySensorEntit
     @property
     def is_on(self) -> bool:
         """Get the state."""
-
         return self.coordinator.updated[self.sensor_name]
 
     # ------------------------------------------------------
